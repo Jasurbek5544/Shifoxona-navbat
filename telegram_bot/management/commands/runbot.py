@@ -52,7 +52,7 @@ class Command(BaseCommand):
             application.add_handler(CallbackQueryHandler(button))
 
             # Contact handler
-            application.add_handler(MessageHandler(filters.CONTACT, process_phone_number))
+            application.add_handler(MessageHandler(filters.CONTACT, handle_contact))
 
             # Message handler
             application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))

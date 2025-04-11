@@ -539,11 +539,18 @@ async def handle_phone_number(update: Update, context: ContextTypes.DEFAULT_TYPE
     keyboard = [[KeyboardButton("📱 Telefon raqamni yuborish", request_contact=True)]]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=True)
     
-    await query.message.reply_text(
-        "Iltimos, telefon raqamingizni yuboring.\n"
-        "Buning uchun quyidagi '📱 Telefon raqamni yuborish' tugmasini bosing:",
-        reply_markup=reply_markup
-    )
+    if query:
+        await query.message.reply_text(
+            "Iltimos, telefon raqamingizni yuboring.\n"
+            "Buning uchun quyidagi '📱 Telefon raqamni yuborish' tugmasini bosing:",
+            reply_markup=reply_markup
+        )
+    else:
+        await update.message.reply_text(
+            "Iltimos, telefon raqamingizni yuboring.\n"
+            "Buning uchun quyidagi '📱 Telefon raqamni yuborish' tugmasini bosing:",
+            reply_markup=reply_markup
+        )
 
 async def process_phone_number(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Yuborilgan telefon raqamni qayta ishlash"""
@@ -590,6 +597,8 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await book_appointment(update, context)
     elif query.data == "my_appointments":
         await my_appointments(update, context)
+    elif query.data == "send_phone":
+        await handle_phone_number(update, context)
     elif query.data.startswith("clinic_"):
         await select_specialization(update, context)
     elif query.data.startswith("specialization_"):
