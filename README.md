@@ -1,4 +1,4 @@
-# Shifokor Navbat - Doctor Appointment System
+# Shifoxona Navbat - Doctor Appointment System
 
 A comprehensive doctor appointment management system with a Telegram bot interface, built with Django.
 
@@ -130,7 +130,7 @@ For support, please open an issue in the GitHub repository or contact the mainta
 
 ---
 
-# Shifokor Navbat - Shifokorlarga Navbat Olish Tizimi
+# Shifoxona Navbat - Shifokorlarga Navbat Olish Tizimi
 
 Django asosida qurilgan, Telegram bot interfeysiga ega keng qamrovli shifokorlarga navbat olish tizimi.
 
@@ -166,8 +166,8 @@ Django asosida qurilgan, Telegram bot interfeysiga ega keng qamrovli shifokorlar
 
 1. Repozitoriyani klonlash:
 ```bash
-git clone https://github.com/yourusername/shifokor_navbat.git
-cd shifokor_navbat
+git clone git@github.com:Jasurbek5544/Shifoxona-navbat.git
+cd Shifoxona-navbat
 ```
 
 2. Virtual muhit yaratish va faollashtirish:
@@ -212,7 +212,7 @@ python manage.py runbot
 ## Loyiha Tuzilishi
 
 ```
-shifokor_navbat/
+Shifoxona-navbat/
 ├── core/                 # Asosiy funksionallik
 ├── doctors/             # Shifokor va klinika boshqaruvi
 ├── appointments/        # Navbat boshqaruvi
