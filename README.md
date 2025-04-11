@@ -34,8 +34,8 @@ A comprehensive doctor appointment management system with a Telegram bot interfa
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/shifokor_navbat.git
-cd shifokor_navbat
+git clone git@github.com:Jasurbek5544/Shifoxona-navbat.git
+cd Shifoxona-navbat
 ```
 
 2. Create and activate a virtual environment:
