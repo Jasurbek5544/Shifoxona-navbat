@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="h3 mb-4">Admin Dashboard</h1>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-3">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-start border-primary shadow h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <div class="small fw-bold text-primary text-uppercase mb-1">
+                                Shifoxonalar</div>
+                            <div class="h2 mb-0 fw-bold text-gray-800">{{ total_clinics }}</div>
+                        </div>
+                        <div class="ms-3">
+                            <i class="fas fa-hospital fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-start border-success shadow h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <div class="small fw-bold text-success text-uppercase mb-1">
+                                Shifokorlar</div>
+                            <div class="h2 mb-0 fw-bold text-gray-800">{{ total_doctors }}</div>
+                        </div>
+                        <div class="ms-3">
+                            <i class="fas fa-user-md fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-start border-info shadow h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <div class="small fw-bold text-info text-uppercase mb-1">
+                                Bemorlar</div>
+                            <div class="h2 mb-0 fw-bold text-gray-800">{{ total_patients }}</div>
+                        </div>
+                        <div class="ms-3">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-start border-warning shadow h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <div class="small fw-bold text-warning text-uppercase mb-1">
+                                Navbatlar</div>
+                            <div class="h2 mb-0 fw-bold text-gray-800">{{ total_appointments }}</div>
+                        </div>
+                        <div class="ms-3">
+                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold text-primary">Boshqaruv</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <a href="{% url 'admin:doctors_clinic_add' %}" class="btn btn-primary w-100">
+                                <i class="fas fa-plus me-2"></i> Shifoxona qo'shish
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{% url 'admin:doctors_doctor_add' %}" class="btn btn-success w-100">
+                                <i class="fas fa-plus me-2"></i> Shifokor qo'shish
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{% url 'admin:doctors_specialization_add' %}" class="btn btn-info w-100">
+                                <i class="fas fa-plus me-2"></i> Mutaxassislik qo'shish
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Appointments -->
+    <div class="row mt-4">
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold text-primary">So'nggi navbatlar</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Bemor</th>
+                                    <th>Shifokor</th>
+                                    <th>Sana</th>
+                                    <th>Navbat</th>
+                                    <th>Holat</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for appointment in recent_appointments %}
+                                <tr>
+                                    <td>{{ appointment.patient.full_name }}</td>
+                                    <td>{{ appointment.doctor.full_name }}</td>
+                                    <td>{{ appointment.appointment_date }}</td>
+                                    <td>{{ appointment.queue_number }}</td>
+                                    <td>
+                                        {% if appointment.status == 'pending' %}
+                                        <span class="badge bg-warning">Kutilmoqda</span>
+                                        {% elif appointment.status == 'confirmed' %}
+                                        <span class="badge bg-success">Tasdiqlangan</span>
+                                        {% elif appointment.status == 'cancelled' %}
+                                        <span class="badge bg-danger">Bekor qilingan</span>
+                                        {% else %}
+                                        <span class="badge bg-info">Tugallangan</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Doctors -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold text-primary">So'nggi qo'shilgan shifokorlar</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Ism</th>
+                                    <th>Shifoxona</th>
+                                    <th>Mutaxassislik</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for doctor in recent_doctors %}
+                                <tr>
+                                    <td>{{ doctor.full_name }}</td>
+                                    <td>{{ doctor.clinic.name }}</td>
+                                    <td>{{ doctor.specialization.name }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

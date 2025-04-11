@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Boshqaruv paneli{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>Xush kelibsiz, {{ user.get_full_name|default:user.username }}</h1>
+                <a href="{% url 'profile' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-user"></i> Profilni ko'rish
+                </a>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Bugungi navbatlar</h5>
+                            <p class="card-text">Bugungi navbatlaringizni ko'ring va boshqaring</p>
+                            <a href="{% url 'appointments:appointment-list' %}?today=true" class="btn btn-primary">
+                                <i class="fas fa-calendar-alt"></i> Navbatlarni ko'rish
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Ish jadvali</h5>
+                            <p class="card-text">Ish vaqtlaringizni va mavjudligingizni boshqaring</p>
+                            <a href="{% url 'doctors:schedule' %}" class="btn btn-primary">
+                                <i class="fas fa-clock"></i> Jadvalni ko'rish
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Bemorlar ma'lumotlari</h5>
+                            <p class="card-text">Bemorlar haqidagi ma'lumotlar va tarixni ko'ring</p>
+                            <a href="{% url 'appointments:appointment-list' %}" class="btn btn-primary">
+                                <i class="fas fa-file-medical"></i> Ma'lumotlarni ko'rish
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

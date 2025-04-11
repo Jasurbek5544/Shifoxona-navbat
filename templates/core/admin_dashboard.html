@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>Admin Dashboard</h1>
+                <div>
+                    <a href="{% url 'admin:index' %}" class="btn btn-outline-primary me-2">
+                        <i class="fas fa-cog"></i> Admin Panel
+                    </a>
+                    <a href="{% url 'profile' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-user"></i> Profile
+                    </a>
+                </div>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-md-4 mb-4">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Shifokorlar</h5>
+                            <h2 class="card-text">{{ total_doctors }}</h2>
+                            <a href="{% url 'admin:doctors_doctor_changelist' %}" class="text-white">
+                                <i class="fas fa-arrow-right"></i> Batafsil
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Bemorlar</h5>
+                            <h2 class="card-text">{{ total_patients }}</h2>
+                            <a href="{% url 'admin:appointments_patient_changelist' %}" class="text-white">
+                                <i class="fas fa-arrow-right"></i> Batafsil
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Navbatlar</h5>
+                            <h2 class="card-text">{{ total_appointments }}</h2>
+                            <a href="{% url 'admin:appointments_appointment_changelist' %}" class="text-white">
+                                <i class="fas fa-arrow-right"></i> Batafsil
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Filtrlar</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="date" class="form-label">Sana</label>
+                            <select class="form-select" id="date" name="date">
+                                <option value="">Barcha</option>
+                                <option value="today" {% if request.GET.date == 'today' %}selected{% endif %}>Bugun</option>
+                                <option value="tomorrow" {% if request.GET.date == 'tomorrow' %}selected{% endif %}>Ertaga</option>
+                                <option value="next_7_days" {% if request.GET.date == 'next_7_days' %}selected{% endif %}>Keyingi 7 kun</option>
+                                <option value="next_30_days" {% if request.GET.date == 'next_30_days' %}selected{% endif %}>Keyingi 30 kun</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="status" class="form-label">Holati</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="">Barcha</option>
+                                <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Kutilmoqda</option>
+                                <option value="confirmed" {% if request.GET.status == 'confirmed' %}selected{% endif %}>Tasdiqlangan</option>
+                                <option value="cancelled" {% if request.GET.status == 'cancelled' %}selected{% endif %}>Bekor qilingan</option>
+                                <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>Yakunlangan</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="doctor" class="form-label">Shifokor</label>
+                            <select class="form-select" id="doctor" name="doctor">
+                                <option value="">Barcha</option>
+                                {% for doctor in doctors %}
+                                    <option value="{{ doctor.id }}" {% if request.GET.doctor == doctor.id|stringformat:"i" %}selected{% endif %}>
+                                        {{ doctor.full_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="queue" class="form-label">Navbat tartibi</label>
+                            <select class="form-select" id="queue" name="queue">
+                                <option value="">Barcha</option>
+                                <option value="start" {% if request.GET.queue == 'start' %}selected{% endif %}>Boshidan</option>
+                                <option value="end" {% if request.GET.queue == 'end' %}selected{% endif %}>Oxiridan</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-filter"></i> Filtrlash
+                            </button>
+                            <a href="{% url 'admin-dashboard' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Tozalash
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Recent Appointments -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">So'nggi Navbatlar</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_appointments %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Bemor</th>
+                                        <th>Shifokor</th>
+                                        <th>Sana</th>
+                                        <th>Navbat</th>
+                                        <th>Holati</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appointment in recent_appointments %}
+                                        <tr>
+                                            <td>{{ appointment.patient.full_name }}</td>
+                                            <td>{{ appointment.doctor.full_name }}</td>
+                                            <td>{{ appointment.appointment_date }}</td>
+                                            <td>{{ appointment.queue_number }}</td>
+                                            <td>
+                                                {% if appointment.status == 'pending' %}
+                                                    <span class="badge bg-warning">Kutilmoqda</span>
+                                                {% elif appointment.status == 'confirmed' %}
+                                                    <span class="badge bg-success">Tasdiqlangan</span>
+                                                {% elif appointment.status == 'cancelled' %}
+                                                    <span class="badge bg-danger">Bekor qilingan</span>
+                                                {% elif appointment.status == 'completed' %}
+                                                    <span class="badge bg-info">Yakunlangan</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> Hozircha navbatlar mavjud emas.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Recent Doctors -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">So'nggi Qo'shilgan Shifokorlar</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_doctors %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Ism</th>
+                                        <th>Mutaxassislik</th>
+                                        <th>Shifoxona</th>
+                                        <th>Holati</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for doctor in recent_doctors %}
+                                        <tr>
+                                            <td>{{ doctor.full_name }}</td>
+                                            <td>{{ doctor.specialization.name }}</td>
+                                            <td>{{ doctor.clinic.name }}</td>
+                                            <td>
+                                                {% if doctor.is_active %}
+                                                    <span class="badge bg-success">Faol</span>
+                                                {% else %}
+                                                    <span class="badge bg-danger">Nofaol</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> Hozircha shifokorlar mavjud emas.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Ish jadvali - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Ish jadvali</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Hafta kuni</th>
+                                        <th>Ishlaydi</th>
+                                        <th>Boshlanish vaqti</th>
+                                        <th>Tugash vaqti</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for schedule in schedules %}
+                                        <tr>
+                                            <td>{{ schedule.get_weekday_display }}</td>
+                                            <td>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" 
+                                                           id="is_working_{{ schedule.weekday }}" 
+                                                           name="is_working_{{ schedule.weekday }}"
+                                                           {% if schedule.is_working %}checked{% endif %}>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input type="time" class="form-control" 
+                                                       name="start_time_{{ schedule.weekday }}" 
+                                                       value="{{ schedule.start_time|time:'H:i' }}"
+                                                       {% if not schedule.is_working %}disabled{% endif %}>
+                                            </td>
+                                            <td>
+                                                <input type="time" class="form-control" 
+                                                       name="end_time_{{ schedule.weekday }}" 
+                                                       value="{{ schedule.end_time|time:'H:i' }}"
+                                                       {% if not schedule.is_working %}disabled{% endif %}>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-primary">Saqlash</button>
+                            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Orqaga</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Enable/disable time inputs based on checkbox state
+        document.querySelectorAll('.form-check-input').forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                const weekday = this.id.split('_')[2];
+                const startTime = document.querySelector(`input[name="start_time_${weekday}"]`);
+                const endTime = document.querySelector(`input[name="end_time_${weekday}"]`);
+                
+                startTime.disabled = !this.checked;
+                endTime.disabled = !this.checked;
+            });
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %} 

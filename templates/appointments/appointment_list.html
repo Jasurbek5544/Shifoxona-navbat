@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}{% if is_today %}Bugungi navbatlar{% else %}Barcha navbatlar{% endif %} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">{% if is_today %}Bugungi navbatlar{% else %}Barcha navbatlar{% endif %}</h4>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
+                        Filtr
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="?status=confirmed{% if is_today %}&today=true{% endif %}">Tasdiqlangan</a></li>
+                        <li><a class="dropdown-item" href="?status=pending{% if is_today %}&today=true{% endif %}">Kutilayotgan</a></li>
+                        <li><a class="dropdown-item" href="?status=cancelled{% if is_today %}&today=true{% endif %}">Bekor qilingan</a></li>
+                        <li><a class="dropdown-item" href="?status=completed{% if is_today %}&today=true{% endif %}">Bajarilgan</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="?{% if is_today %}today=true{% endif %}">Barchasi</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if appointments %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Bemor</th>
+                                    <th>Sana</th>
+                                    <th>Navbat raqami</th>
+                                    <th>Holat</th>
+                                    <th>Amallar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for appointment in appointments %}
+                                    <tr>
+                                        <td>
+                                            {{ appointment.patient.full_name }}<br>
+                                            <small class="text-muted">{{ appointment.patient.phone }}</small>
+                                        </td>
+                                        <td>{{ appointment.appointment_date|date:"d.m.Y" }}</td>
+                                        <td>{{ appointment.queue_number }}</td>
+                                        <td>
+                                            <span class="badge {% if appointment.status == 'confirmed' %}bg-success{% elif appointment.status == 'pending' %}bg-warning{% elif appointment.status == 'cancelled' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                                {% if appointment.status == 'cancelled' %}
+                                                    {% if appointment.cancelled_by_patient %}
+                                                        Bemor tomonidan bekor qilingan
+                                                    {% else %}
+                                                        Bekor qilingan
+                                                    {% endif %}
+                                                {% else %}
+                                                    {{ appointment.get_status_display }}
+                                                {% endif %}
+                                            </span>
+                                            {% if appointment.cancellation_reason %}
+                                                <br>
+                                                <small class="text-muted">{{ appointment.cancellation_reason }}</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'appointments:appointment-detail' appointment.pk %}" class="btn btn-sm btn-info">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            {% if appointment.status == 'pending' %}
+                                                <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#confirmModal{{ appointment.pk }}">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            {% elif appointment.status == 'confirmed' %}
+                                                <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#completeModal{{ appointment.pk }}">
+                                                    <i class="fas fa-check-double"></i>
+                                                </button>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+
+                                    {% if appointment.status == 'pending' %}
+                                        <div class="modal fade" id="confirmModal{{ appointment.pk }}" tabindex="-1">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Navbatni tasdiqlash</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <form action="{% url 'appointments:appointment-cancel' appointment.pk %}" method="post">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="action" value="confirm">
+                                                        <div class="modal-body">
+                                                            <p>Haqiqatan ham bu navbatni tasdiqlamoqchimisiz?</p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
+                                                            <button type="submit" class="btn btn-success">Tasdiqlash</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+
+                                    {% if appointment.status == 'confirmed' %}
+                                        <div class="modal fade" id="completeModal{{ appointment.pk }}" tabindex="-1">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Navbatni bajarildi deb belgilash</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <form action="{% url 'appointments:appointment-cancel' appointment.pk %}" method="post">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="action" value="complete">
+                                                        <div class="modal-body">
+                                                            <p>Haqiqatan ham bu navbatni bajarildi deb belgilamoqchimisiz?</p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
+                                                            <button type="submit" class="btn btn-success">Bajarildi deb belgilash</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        Navbatlar topilmadi.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

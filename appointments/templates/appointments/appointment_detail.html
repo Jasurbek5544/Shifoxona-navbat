@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Navbat ma'lumotlari{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Navbat ma'lumotlari</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Bemor ma'lumotlari</h5>
+                            <p><strong>Ismi:</strong> {{ appointment.patient.full_name }}</p>
+                            <p><strong>Telefon:</strong> {{ appointment.patient.phone }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Navbat ma'lumotlari</h5>
+                            <p><strong>Navbat raqami:</strong> {{ appointment.queue_number }}</p>
+                            <p><strong>Sana:</strong> {{ appointment.appointment_date|date:"d.m.Y" }}</p>
+                            <p>
+                                <strong>Holati:</strong>
+                                {% if appointment.status == 'pending' %}
+                                    <span class="badge badge-warning">Kutilmoqda</span>
+                                {% elif appointment.status == 'confirmed' %}
+                                    <span class="badge badge-success">Tasdiqlangan</span>
+                                {% elif appointment.status == 'cancelled' %}
+                                    <span class="badge badge-danger">Bekor qilingan</span>
+                                {% elif appointment.status == 'completed' %}
+                                    <span class="badge badge-info">Tugallangan</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <h5>Shifokor ma'lumotlari</h5>
+                            <p><strong>Ismi:</strong> {{ appointment.doctor.full_name }}</p>
+                            <p><strong>Mutaxassislik:</strong> {{ appointment.doctor.specialization.name }}</p>
+                            <p><strong>Klinika:</strong> {{ appointment.doctor.clinic.name }}</p>
+                        </div>
+                    </div>
+
+                    {% if appointment.notes %}
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <h5>Qo'shimcha ma'lumotlar</h5>
+                            <p>{{ appointment.notes }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if appointment.cancellation_reason %}
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <h5>Bekor qilish sababi</h5>
+                            <p>{{ appointment.cancellation_reason }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'appointments:appointment-list' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Orqaga
+                    </a>
+                    {% if appointment.status == 'confirmed' %}
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#cancelModal">
+                        <i class="fas fa-times"></i> Bekor qilish
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cancel Modal -->
+{% if appointment.status == 'confirmed' %}
+<div class="modal fade" id="cancelModal" tabindex="-1" role="dialog" aria-labelledby="cancelModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelModalLabel">Navbatni bekor qilish</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{% url 'appointments:appointment-cancel' appointment.id %}" method="post">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <p>Navbatni bekor qilishni tasdiqlaysizmi?</p>
+                    <div class="form-group">
+                        <label for="reason">Sababi:</label>
+                        <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Bekor qilish</button>
+                    <button type="submit" class="btn btn-danger">Tasdiqlash</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %} 

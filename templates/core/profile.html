@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Profile</h2>
+                </div>
+                <div class="card-body">
+                    <h4>User Information</h4>
+                    <p><strong>Username:</strong> {{ user.username }}</p>
+                    <p><strong>Name:</strong> {{ user.get_full_name|default:"Not set" }}</p>
+                    <p><strong>Email:</strong> {{ user.email|default:"Not set" }}</p>
+                    
+                    {% if is_doctor %}
+                        <hr>
+                        <h4>Doctor Information</h4>
+                        <p><strong>Full Name:</strong> {{ doctor.full_name }}</p>
+                        <p><strong>Specialization:</strong> {{ doctor.specialization.name }}</p>
+                        <p><strong>Clinic:</strong> {{ doctor.clinic.name }}</p>
+                        <p><strong>Phone:</strong> {{ doctor.phone }}</p>
+                        <p><strong>Experience:</strong> {{ doctor.experience_years }} years</p>
+                        <p><strong>Bio:</strong> {{ doctor.bio }}</p>
+                    {% endif %}
+                    
+                    <div class="mt-4">
+                        <a href="{% url 'dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+                        <a href="{% url 'password_change' %}" class="btn btn-secondary">Change Password</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

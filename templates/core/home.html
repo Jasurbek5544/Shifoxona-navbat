@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome to Hospital Queue Management{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 text-center">
+            <h1 class="display-4 mb-4">Welcome to Hospital Queue Management</h1>
+            <p class="lead mb-4">Streamline your hospital appointments and patient management</p>
+            
+            <div class="row mt-5">
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">For Patients</h5>
+                            <p class="card-text">Book appointments with doctors easily through our Telegram bot</p>
+                            <a href="https://t.me/shifoxona_navbat_bot" class="btn btn-primary" target="_blank">
+                                <i class="fab fa-telegram"></i> Open Telegram Bot
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">For Doctors</h5>
+                            <p class="card-text">Manage your appointments and patient queue</p>
+                            <a href="{% url 'login' %}" class="btn btn-primary">Login to Dashboard</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

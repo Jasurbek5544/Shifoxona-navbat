@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Navbatlar{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Navbatlar</h2>
+            
+            <!-- Filter -->
+            <div class="mb-3">
+                <form method="get" class="form-inline">
+                    <div class="form-group mr-2">
+                        <label for="status" class="mr-2">Holati:</label>
+                        <select name="status" id="status" class="form-control" onchange="this.form.submit()">
+                            <option value="all" {% if status == 'all' %}selected{% endif %}>Barchasi</option>
+                            <option value="pending" {% if status == 'pending' %}selected{% endif %}>Kutilmoqda</option>
+                            <option value="confirmed" {% if status == 'confirmed' %}selected{% endif %}>Tasdiqlangan</option>
+                            <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>Bekor qilingan</option>
+                            <option value="completed" {% if status == 'completed' %}selected{% endif %}>Tugallangan</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Appointments Table -->
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Navbat raqami</th>
+                            <th>Bemor</th>
+                            <th>Sana</th>
+                            <th>Holati</th>
+                            <th>Amallar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appointment in appointments %}
+                        <tr>
+                            <td>{{ appointment.queue_number }}</td>
+                            <td>
+                                {{ appointment.patient.full_name }}
+                                <br>
+                                <small class="text-muted">{{ appointment.patient.phone }}</small>
+                            </td>
+                            <td>{{ appointment.appointment_date|date:"d.m.Y" }}</td>
+                            <td>
+                                {% if appointment.status == 'pending' %}
+                                    <span class="badge badge-warning">Kutilmoqda</span>
+                                {% elif appointment.status == 'confirmed' %}
+                                    <span class="badge badge-success">Tasdiqlangan</span>
+                                {% elif appointment.status == 'cancelled' %}
+                                    <span class="badge badge-danger">Bekor qilingan</span>
+                                {% elif appointment.status == 'completed' %}
+                                    <span class="badge badge-info">Tugallangan</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'appointments:appointment-detail' appointment.id %}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i> Ko'rish
+                                </a>
+                                {% if appointment.status == 'confirmed' %}
+                                <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#cancelModal{{ appointment.id }}">
+                                    <i class="fas fa-times"></i> Bekor qilish
+                                </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        <!-- Cancel Modal -->
+                        {% if appointment.status == 'confirmed' %}
+                        <div class="modal fade" id="cancelModal{{ appointment.id }}" tabindex="-1" role="dialog" aria-labelledby="cancelModalLabel{{ appointment.id }}" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="cancelModalLabel{{ appointment.id }}">Navbatni bekor qilish</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <form action="{% url 'appointments:appointment-cancel' appointment.id %}" method="post">
+                                        {% csrf_token %}
+                                        <div class="modal-body">
+                                            <p>Navbatni bekor qilishni tasdiqlaysizmi?</p>
+                                            <div class="form-group">
+                                                <label for="reason">Sababi:</label>
+                                                <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Bekor qilish</button>
+                                            <button type="submit" class="btn btn-danger">Tasdiqlash</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">Navbatlar mavjud emas</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
