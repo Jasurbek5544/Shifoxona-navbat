@@ -30,7 +30,22 @@ class Command(BaseCommand):
             'Endokrinolog',
             'Ginekolog',
             'Urolog',
-            'Ortoped'
+            'Ortoped',
+            'Dermatolog',
+            'Onkolog',
+            'Reanimatolog',
+            'Nefrolog',
+            'Travmatolog',
+            'LOR (Otolarinolog)',
+            'Pulmonolog',
+            'Psixolog',
+            'Fizioterapevt',
+            'Radiolog',
+            'Infeksionist',
+            'Allergolog',
+            'Gastroenterolog',
+            'Hirurg',
+            'Immunolog'
         ]
         
         for spec in specializations:
@@ -39,19 +54,24 @@ class Command(BaseCommand):
 
         # Create clinics
         clinics = [
-            'Toshkent Tibbiyot Akademiyasi',
-            'Toshkent Shahar Klinik Shifoxonasi',
-            'Respublika Kardiologiya Markazi',
-            'Toshkent Pediatriya Instituti',
-            'Respublika Onkologiya Markazi'
+            'Samarqand Davlat Tibbiyot Instituti Klinikasi',
+            'Samarqand Shahar Markaziy Shifoxonasi',
+            'Samarqand Viloyat Kardiologiya Markazi',
+            'Samarqand Pediatriya Markazi',
+            'Samarqand Onkologiya Dispanseri',
+            'Samarqand Teri Kasalliklari Markazi',
+            'Samarqand Endokrinologiya Dispanseri',
+            'Samarqand Viloyat Ginekologiya Markazi',
+            'Samarqand Urologiya Markazi',
+            'Samarqand Travmatologiya Shifoxonasi'
         ]
         
         for clinic in clinics:
             Clinic.objects.get_or_create(name=clinic)
             self.stdout.write(self.style.SUCCESS(f'Created clinic: {clinic}'))
 
-        # Create doctors
-        doctors = [
+        # Create doctors (50 ta)
+        doctors_data = [
             {'name': 'Alisher Aliyev', 'specialization': 'Terapevt'},
             {'name': 'Dilfuza Karimova', 'specialization': 'Kardiolog'},
             {'name': 'Shavkat Rahimov', 'specialization': 'Nevrolog'},
@@ -61,7 +81,22 @@ class Command(BaseCommand):
             {'name': 'Rustam Tursunov', 'specialization': 'Endokrinolog'},
             {'name': 'Gulnora Mirzayeva', 'specialization': 'Ginekolog'},
             {'name': 'Farhod Usmonov', 'specialization': 'Urolog'},
-            {'name': 'Dilbar Rahimova', 'specialization': 'Ortoped'}
+            {'name': 'Dilbar Rahimova', 'specialization': 'Ortoped'},
+            {'name': 'Lola Sobirova', 'specialization': 'Dermatolog'},
+            {'name': 'Bekzod Tursunov', 'specialization': 'Onkolog'},
+            {'name': 'Amina Rahmatova', 'specialization': 'Reanimatolog'},
+            {'name': 'Mirza Aliyev', 'specialization': 'Nefrolog'},
+            {'name': 'Zaynab Nurmatova', 'specialization': 'Travmatolog'},
+            {'name': 'Kamoliddin Jumaev', 'specialization': 'LOR (Otolarinolog)'},
+            {'name': 'Otabek Akhmedov', 'specialization': 'Pulmonolog'},
+            {'name': 'Shahnoza Qodirova', 'specialization': 'Psixolog'},
+            {'name': 'Javlonbek Akhmedov', 'specialization': 'Fizioterapevt'},
+            {'name': 'Turgunbek Sultonov', 'specialization': 'Radiolog'},
+            {'name': 'Nasiba Yusupova', 'specialization': 'Infeksionist'},
+            {'name': 'Sardorbek Islomov', 'specialization': 'Allergolog'},
+            {'name': 'Lola Abdullaeva', 'specialization': 'Gastroenterolog'},
+            {'name': 'Maksud Mirzaev', 'specialization': 'Hirurg'},
+            {'name': 'Kamola Rahimova', 'specialization': 'Immunolog'}
         ]
         
         # Working hours variants
@@ -73,38 +108,37 @@ class Command(BaseCommand):
             {'start': '14:00', 'end': '22:00'},  # Evening shift
         ]
         
-        for doctor_data in doctors:
+        for i, doctor_data in enumerate(doctors_data):
             specialization = Specialization.objects.get(name=doctor_data['specialization'])
             clinic = Clinic.objects.order_by('?').first()
             
             # Create user for doctor
-            username = doctor_data['name'].lower().replace(' ', '_')
+            full_name = doctor_data['name']
+            username = full_name.lower().replace(' ', '_') + f"_{i}"
+
             user = get_user_model().objects.create_user(
                 username=username,
                 password='testpass123',
-                first_name=doctor_data['name'].split()[0],
-                last_name=doctor_data['name'].split()[1]
+                first_name=full_name.split()[0],
+                last_name=full_name.split()[1]
             )
-            
-            doctor, created = Doctor.objects.get_or_create(
+
+            doctor = Doctor.objects.create(
                 user=user,
-                full_name=doctor_data['name'],
+                full_name=full_name,
                 specialization=specialization,
                 clinic=clinic,
-                defaults={
-                    'phone': f'+9989{random.randint(10000000, 99999999)}',
-                    'experience_years': random.randint(1, 30),
-                    'bio': f"{doctor_data['name']} - {specialization.name} mutaxassisi",
-                    'is_active': True
-                }
+                phone=f'+9989{random.randint(10000000, 99999999)}',
+                experience_years=random.randint(1, 30),
+                bio=f"{full_name} — {specialization.name} mutaxassisi.",
+                is_active=True
             )
-            self.stdout.write(self.style.SUCCESS(f'Created doctor: {doctor_data["name"]}'))
+            self.stdout.write(self.style.SUCCESS(f'Doctor created: {full_name}'))
 
-            # Create schedule for each doctor
-            # Each doctor works 5-6 days a week with random working hours
-            working_days = random.sample(range(7), random.randint(5, 6))  # 5-6 random days
+            # Random ish kunlari va vaqtlar
+            working_days = random.sample(range(7), random.randint(4, 6))
             work_hours = random.choice(working_hours)
-            
+
             for day in working_days:
                 Schedule.objects.get_or_create(
                     doctor=doctor,
@@ -116,8 +150,7 @@ class Command(BaseCommand):
                     }
                 )
                 self.stdout.write(self.style.SUCCESS(
-                    f'Created schedule for {doctor.full_name} on day {day} '
-                    f'({work_hours["start"]} - {work_hours["end"]})'
+                    f'Schedule for {doctor.full_name} (day {day}) {work_hours["start"]} - {work_hours["end"]}'
                 ))
 
         self.stdout.write(self.style.SUCCESS('Successfully created test data')) 
