@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-calendar-plus me-2"></i>
+                        Navbat olish - {{ doctor.full_name }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="appointment-form">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="id_full_name" class="form-label">Ism va Familiya</label>
+                            {{ form.full_name }}
+                            {% if form.full_name.errors %}
+                                <div class="text-danger">{{ form.full_name.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_phone" class="form-label">Telefon raqam</label>
+                            {{ form.phone }}
+                            {% if form.phone.errors %}
+                                <div class="text-danger">{{ form.phone.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_appointment_date" class="form-label">Navbat kuni</label>
+                            {{ form.appointment_date }}
+                            {% if form.appointment_date.errors %}
+                                <div class="text-danger">{{ form.appointment_date.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_reason" class="form-label">Tashrif sababi</label>
+                            {{ form.reason }}
+                            {% if form.reason.errors %}
+                                <div class="text-danger">{{ form.reason.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Navbat olish
+                            </button>
+                            <a href="{% url 'doctor-detail' doctor.id %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Orqaga
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('appointment-form').addEventListener('submit', function(e) {
+    // Submit the form normally to download the PDF
+    // After a short delay, redirect to home page
+    setTimeout(function() {
+        window.location.href = "{% url 'home' %}";
+    }, 1000); // 1 second delay to allow PDF download to start
+});
+</script>
+{% endblock %} 

@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+
+{% block title %}Shifoxonalar{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 6rem 0;
+        margin-bottom: 3rem;
+    }
+    .hero-content {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .cta-button {
+        background-color: #0d6efd;
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    .cta-button:hover {
+        background-color: #0a58ca;
+        color: white;
+        transform: translateY(-2px);
+    }
+    .stats-section {
+        background-color: #f8f9fa;
+        padding: 4rem 0;
+    }
+    .stat-card {
+        text-align: center;
+        padding: 2rem;
+    }
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #0d6efd;
+    }
+    .stat-label {
+        color: #6c757d;
+        font-size: 1.1rem;
+    }
+    .service-card {
+        transition: transform 0.3s ease;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+        border-radius: 10px;
+    }
+    .service-card:hover {
+        transform: translateY(-5px);
+    }
+    .service-icon {
+        font-size: 2.5rem;
+        color: #0d6efd;
+        margin-bottom: 1rem;
+    }
+    .footer {
+        background-color: #343a40;
+        color: white;
+        padding: 4rem 0 2rem;
+    }
+    .footer-links h5 {
+        color: white;
+        margin-bottom: 1.5rem;
+    }
+    .footer-links ul {
+        list-style: none;
+        padding: 0;
+    }
+    .footer-links li {
+        margin-bottom: 0.5rem;
+    }
+    .footer-links a {
+        color: rgba(255,255,255,0.7);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    .footer-links a:hover {
+        color: white;
+    }
+    .copyright {
+        border-top: 1px solid rgba(255,255,255,0.1);
+        padding-top: 2rem;
+        margin-top: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="hero-content text-center">
+            <h1 class="display-4 mb-4">Shifokorlar bilan uchrashuv</h1>
+            <p class="lead mb-4">Tajribali shifokorlarimiz bilan konsultatsiya va diagnostikani o'tkazing</p>
+            <a href="tel:+998901234567" class="btn cta-button">
+                <i class="fas fa-phone-alt me-2"></i>Qo'ng'iroq qiling
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">25</div>
+                    <div class="stat-label">Bemorlar xonasi</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">15,000+</div>
+                    <div class="stat-label">Mamnun bemorlar</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">50</div>
+                    <div class="stat-label">Shifokorlar</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">11</div>
+                    <div class="stat-label">Yillik tajriba</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <h2 class="text-center mb-5">Bizning xizmatlar</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card service-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-user-md service-icon"></i>
+                    <h3 class="card-title">Terapiya</h3>
+                    <p class="card-text">Umumiy tibbiy ko'rik va konsultatsiya</p>
+                    <a href="#" class="btn btn-outline-primary">Batafsil</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card service-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-heartbeat service-icon"></i>
+                    <h3 class="card-title">Kardiologiya</h3>
+                    <p class="card-text">Yurak-qon tomir tizimi kasalliklari</p>
+                    <a href="#" class="btn btn-outline-primary">Batafsil</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card service-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-stethoscope service-icon"></i>
+                    <h3 class="card-title">Pediatriya</h3>
+                    <p class="card-text">Bolalar kasalliklari bo'yicha konsultatsiya</p>
+                    <a href="#" class="btn btn-outline-primary">Batafsil</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h5>Biz haqimizda</h5>
+                <p>O'zbekistonning yetakchi tibbiy muassasasi. Biz bemorlarimizga eng yaxshi tibbiy xizmatlarni taqdim etamiz.</p>
+            </div>
+            <div class="col-md-4">
+                <h5>Tezkor havolalar</h5>
+                <ul>
+                    <li><a href="#">Shifokorlar</a></li>
+                    <li><a href="#">Xizmatlar</a></li>
+                    <li><a href="#">Narxlar</a></li>
+                    <li><a href="#">Kontaktlar</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h5>Kontaktlar</h5>
+                <ul>
+                    <li><i class="fas fa-phone me-2"></i> +998 90 123 45 67</li>
+                    <li><i class="fas fa-envelope me-2"></i> info@shifokor.uz</li>
+                    <li><i class="fas fa-map-marker-alt me-2"></i> Toshkent shahri</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+{% endblock %} 

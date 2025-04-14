@@ -9,6 +9,7 @@ urlpatterns = [
     path('doctor/', views.doctor_appointment_list, name='doctor-appointment-list'),
     path('<int:pk>/', views.appointment_detail, name='appointment-detail'),
     path('<int:pk>/cancel/', views.appointment_cancel, name='appointment-cancel'),
+    path('create/<int:doctor_id>/', views.appointment_create, name='create'),
 
     # API views
     path('api/', views.AppointmentListView.as_view(), name='api-appointment-list'),

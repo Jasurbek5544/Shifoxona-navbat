@@ -28,3 +28,18 @@ class Clinic(TimeStampedModel):
 
     def __str__(self):
         return self.name
+
+class ClinicRoom(TimeStampedModel):
+    """Model for clinic rooms"""
+    name = models.CharField(_("Xona nomi"), max_length=100)
+    room_number = models.CharField(_("Xona raqami"), max_length=20)
+    description = models.TextField(_("Tavsif"), blank=True)
+    is_available = models.BooleanField(_("Mavjud"), default=True)
+
+    class Meta:
+        verbose_name = _("Klinika xonasi")
+        verbose_name_plural = _("Klinika xonalari")
+        ordering = ['room_number']
+
+    def __str__(self):
+        return f"{self.name} - {self.room_number}"

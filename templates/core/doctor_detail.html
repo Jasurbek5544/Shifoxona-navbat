@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Doctor Detail Section Start -->
+<section class="service-area section-padding">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="doctor-photo-container">
+                    {% if doctor.photo %}
+                    <img src="{{ doctor.photo.url }}" alt="{{ doctor.full_name }}" class="doctor-photo">
+                    {% else %}
+                    <img src="{% static 'img/avatar.jpeg' %}" alt="{{ doctor.full_name }}" class="doctor-photo">
+                    {% endif %}
+                </div>
+                <div class="doctor-contact-info">
+                    <h4>Aloqa ma'lumotlari</h4>
+                    <p><i class="fas fa-phone me-2"></i> {{ doctor.phone }}</p>
+                    <p><i class="fas fa-envelope me-2"></i> {{ doctor.user.email }}</p>
+                    <p><i class="fas fa-map-marker-alt me-2"></i> {{ doctor.clinic.address|default:"Manzil kiritilmagan" }}</p>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="doctor-info">
+                    <h2>{{ doctor.full_name }}</h2>
+                    <p class="specialization"><strong>Mutaxassislik:</strong> {{ doctor.specialization.name }}</p>
+                    <p class="clinic"><strong>Shifoxona:</strong> {{ doctor.clinic.name }}</p>
+                    <p class="experience"><strong>Tajriba:</strong> {{ doctor.experience_years }} yil</p>
+                    
+                    <div class="doctor-schedule mt-4">
+                        <h4>Ish vaqti</h4>
+                        <div class="schedule-table">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Kun</th>
+                                        <th>Boshlanish</th>
+                                        <th>Tugash</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Dushanba</td>
+                                        <td>{{ doctor.working_hours.monday_start|default:"09:00" }}</td>
+                                        <td>{{ doctor.working_hours.monday_end|default:"17:00" }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Seshanba</td>
+                                        <td>{{ doctor.working_hours.tuesday_start|default:"09:00" }}</td>
+                                        <td>{{ doctor.working_hours.tuesday_end|default:"17:00" }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Chorshanba</td>
+                                        <td>{{ doctor.working_hours.wednesday_start|default:"09:00" }}</td>
+                                        <td>{{ doctor.working_hours.wednesday_end|default:"17:00" }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Payshanba</td>
+                                        <td>{{ doctor.working_hours.thursday_start|default:"09:00" }}</td>
+                                        <td>{{ doctor.working_hours.thursday_end|default:"17:00" }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Juma</td>
+                                        <td>{{ doctor.working_hours.friday_start|default:"09:00" }}</td>
+                                        <td>{{ doctor.working_hours.friday_end|default:"17:00" }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="doctor-description mt-4">
+                        <h4>Umumiy ma'lumot</h4>
+                        <p>{{ doctor.description|default:"Ma'lumot kiritilmagan" }}</p>
+                    </div>
+
+                    <div class="doctor-actions mt-4">
+                        <a href="{% url 'appointments:create' doctor.id %}" class="btn btn-primary">
+                            <i class="fas fa-calendar-plus me-2"></i>Navbat olish
+                        </a>
+                        <a href="{% url 'doctors' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Orqaga
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Doctor Detail Section End -->
+{% endblock %} 

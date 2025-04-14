@@ -41,6 +41,117 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,.1);
         }
+        .doctor-photo {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 20px;
+        }
+        .doctor-photo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .single-service .doctor-photo {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px;
+            display: block;
+        }
+        .single-service {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .single-service:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            border-color: #007bff;
+        }
+        .single-service h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .single-service p {
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .single-service .btn {
+            margin-top: 15px;
+            padding: 8px 20px;
+            background: #007bff;
+            color: #fff;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        .single-service .btn:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+        .doctor-contact-info {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        .doctor-contact-info h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .doctor-contact-info p {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .doctor-contact-info i {
+            color: #007bff;
+            width: 20px;
+        }
+        .doctor-schedule {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .doctor-schedule h4 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        .schedule-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        .doctor-description {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .doctor-description h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .doctor-description p {
+            color: #666;
+            line-height: 1.6;
+        }
+        .doctor-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .doctor-actions .btn {
+            padding: 10px 20px;
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -111,9 +222,10 @@
     <div class="container mt-4">
         {% if messages %}
             {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
-                    <i class="fas fa-info-circle me-2"></i>{{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" 
+                     {% if 'timeout' in message.extra_tags %}data-timeout="{{ message.extra_tags|slice:'7:' }}"{% endif %}>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             {% endfor %}
         {% endif %}
@@ -130,6 +242,21 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle timed messages
+        const alerts = document.querySelectorAll('.alert[data-timeout]');
+        alerts.forEach(function(alert) {
+            const timeout = parseInt(alert.dataset.timeout);
+            if (!isNaN(timeout)) {
+                setTimeout(function() {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }, timeout);
+            }
+        });
+    });
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html> 

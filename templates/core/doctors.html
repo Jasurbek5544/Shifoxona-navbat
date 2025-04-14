@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Doctors Section Start -->
+<section class="service-area section-padding">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="section-title">
+                    <h2>Bizning Doktorlarimiz</h2>
+                    <p>Bizning malakali va tajribali shifokorlarimiz sizga eng yaxshi tibbiy xizmatlarni taqdim etishga tayyor</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            {% for doctor in doctors %}
+            <div class="col-lg-4 col-md-6">
+                <div class="single-service">
+                    {% if doctor.photo %}
+                    <img src="{{ doctor.photo.url }}" alt="{{ doctor.full_name }}" class="doctor-photo">
+                    {% else %}
+                    <img src="{% static 'img/avatar.jpeg' %}" alt="{{ doctor.full_name }}" class="doctor-photo">
+                    {% endif %}
+                    <h4>{{ doctor.full_name }}</h4>
+                    <p><strong>Mutaxassislik:</strong> {{ doctor.specialization.name }}</p>
+                    <p><strong>Shifoxona:</strong> {{ doctor.clinic.name }}</p>
+                    <p><strong>Tajriba:</strong> {{ doctor.experience_years }} yil</p>
+                    <a href="{% url 'doctor-detail' doctor.id %}" class="btn">Batafsil</a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p>Hozircha doktorlar ro'yxati mavjud emas</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+<!-- Doctors Section End -->
+{% endblock %} 

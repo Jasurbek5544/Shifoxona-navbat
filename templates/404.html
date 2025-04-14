@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}404 - Sahifa topilmadi{% endblock %}
+
+{% block content %}
+<div class="error-page">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="error-content text-center">
+                    <h1>404</h1>
+                    <h2>Kechirasiz, sahifa topilmadi!</h2>
+                    <p>Siz qidirgan sahifa mavjud emas yoki o'chirilgan bo'lishi mumkin.</p>
+                    <a href="{% url 'home' %}" class="btn btn-primary">Bosh sahifaga qaytish</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.error-page {
+    padding: 100px 0;
+    background: #f8f9fa;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+.error-content {
+    padding: 50px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+.error-content h1 {
+    font-size: 120px;
+    color: #1A76D1;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.error-content h2 {
+    font-size: 36px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.error-content p {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.error-content .btn-primary {
+    background: #1A76D1;
+    border: none;
+    padding: 12px 30px;
+    font-size: 16px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.error-content .btn-primary:hover {
+    background: #155a9e;
+    transform: translateY(-2px);
+}
+</style>
+{% endblock %} 

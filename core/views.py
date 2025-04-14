@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib import messages
@@ -6,18 +6,38 @@ from django.contrib.auth.models import User
 from doctors.models import Doctor, Clinic, Specialization
 from appointments.models import Appointment, Patient
 from django.utils import timezone
+from core.models import ClinicRoom
+from django.http import HttpResponseNotFound
 
 def is_admin(user):
     return user.is_superuser
 
 def home(request):
-    """Main page view - redirects to login if not authenticated"""
+    """Main page view - shows hospital information"""
+    # Get statistics
+    total_rooms = ClinicRoom.objects.count()
+    total_doctors = Doctor.objects.count()
+    total_patients = Patient.objects.count()
+    total_appointments = Appointment.objects.count()
+    
+    # Get average experience of doctors
+    doctors = Doctor.objects.filter(years_of_experience__gt=0)
+    total_experience = sum(doctor.years_of_experience for doctor in doctors)
+    avg_experience = total_experience / len(doctors) if len(doctors) > 0 else 0
+    
+    context = {
+        'total_rooms': total_rooms,
+        'total_doctors': total_doctors,
+        'total_patients': total_patients,
+        'avg_experience': round(avg_experience, 1)
+    }
+    
     if request.user.is_authenticated:
         if request.user.is_superuser:
             return redirect('admin-dashboard')
         elif hasattr(request.user, 'doctor_profile'):
             return redirect('dashboard')
-    return redirect('login')
+    return render(request, 'core/home.html', context)
 
 class CustomLoginView(LoginView):
     """Custom login view to handle redirects"""
@@ -152,3 +172,16 @@ def profile(request):
         'appointments': appointments,
     }
     return render(request, 'core/profile.html', context)
+
+def doctors_list(request):
+    """View to display list of all doctors"""
+    doctors = Doctor.objects.all()
+    return render(request, 'core/doctors.html', {'doctors': doctors})
+
+def doctor_detail(request, doctor_id):
+    """View to display detailed information about a specific doctor"""
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+    return render(request, 'core/doctor_detail.html', {'doctor': doctor})
+
+def handler404(request, exception):
+    return render(request, '404.html', status=404)

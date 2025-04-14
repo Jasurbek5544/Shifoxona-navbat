@@ -31,6 +31,7 @@ class Doctor(TimeStampedModel):
     bio = models.TextField(_("Biography"), blank=True)
     photo = models.ImageField(_("Photo"), upload_to='doctors/', blank=True, null=True)
     is_active = models.BooleanField(_("Is active"), default=True)
+    years_of_experience = models.IntegerField(_("Tajriba yili"), default=0)
 
     class Meta:
         verbose_name = _("Doctor")

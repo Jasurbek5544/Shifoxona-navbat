@@ -19,6 +19,15 @@ from .serializers import (
 )
 from doctors.models import Doctor
 from .permissions import IsDoctor
+from .forms import AppointmentForm
+from django.http import HttpResponse
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from io import BytesIO
+import os
+from datetime import datetime
 
 # Create your views here.
 
@@ -159,6 +168,144 @@ def appointment_cancel(request, pk):
         'appointment': appointment,
     }
     return render(request, 'appointments/appointment_cancel.html', context)
+
+def generate_appointment_pdf(appointment):
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=A4)
+    
+    # Set colors
+    title_color = (0.2, 0.4, 0.8)  # Dark blue
+    header_color = (0.3, 0.6, 0.9)  # Light blue
+    text_color = (0.1, 0.1, 0.1)  # Dark gray
+    
+    # Add header with color
+    p.setFillColorRGB(*header_color)
+    p.rect(0, 750, 600, 50, fill=1)
+    
+    # Add title with larger font
+    p.setFont("Helvetica-Bold", 24)
+    p.setFillColorRGB(1, 1, 1)  # White text
+    p.drawString(100, 770, "NAVBAT CHIPTASI")
+    
+    # Reset font and color for content
+    p.setFont("Helvetica-Bold", 16)
+    p.setFillColorRGB(*title_color)
+    
+    # Add appointment number
+    p.drawString(100, 700, f"Navbat raqami: #{appointment.queue_number}")
+    
+    # Add patient info
+    p.setFont("Helvetica", 14)
+    p.setFillColorRGB(*text_color)
+    p.drawString(100, 660, f"Bemor: {appointment.patient.full_name}")
+    p.drawString(100, 630, f"Telefon: {appointment.patient.phone}")
+    
+    # Add doctor info
+    p.setFont("Helvetica-Bold", 14)
+    p.setFillColorRGB(*title_color)
+    p.drawString(100, 590, "Doktor ma'lumotlari:")
+    
+    p.setFont("Helvetica", 14)
+    p.setFillColorRGB(*text_color)
+    p.drawString(100, 560, f"Shifoxona: {appointment.doctor.clinic.name}")
+    p.drawString(100, 530, f"Doktor: {appointment.doctor.full_name}")
+    p.drawString(100, 500, f"Mutaxassislik: {appointment.doctor.specialization.name}")
+    
+    # Add appointment details
+    p.setFont("Helvetica-Bold", 14)
+    p.setFillColorRGB(*title_color)
+    p.drawString(100, 460, "Navbat ma'lumotlari:")
+    
+    p.setFont("Helvetica", 14)
+    p.setFillColorRGB(*text_color)
+    p.drawString(100, 430, f"Sana: {appointment.appointment_date.strftime('%d.%m.%Y')}")
+    p.drawString(100, 400, f"Holat: {appointment.get_status_display()}")
+    
+    # Add notes if exists
+    if appointment.notes:
+        p.setFont("Helvetica-Bold", 14)
+        p.setFillColorRGB(*title_color)
+        p.drawString(100, 370, "Qo'shimcha ma'lumotlar:")
+        
+        p.setFont("Helvetica", 14)
+        p.setFillColorRGB(*text_color)
+        p.drawString(100, 340, appointment.notes)
+    
+    # Add footer
+    p.setFont("Helvetica", 10)
+    p.setFillColorRGB(0.5, 0.5, 0.5)  # Gray
+    p.drawString(100, 50, "Bu chipta elektron tarzda yaratilgan va qonuniy kuchga ega.")
+    
+    p.save()
+    buffer.seek(0)
+    return buffer
+
+def appointment_create(request, doctor_id):
+    """View for creating a new appointment with a specific doctor"""
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+    
+    if request.method == 'POST':
+        form = AppointmentForm(request.POST, doctor=doctor)
+        if form.is_valid():
+            try:
+                # Try to get existing patient by phone
+                patient = Patient.objects.get(phone=form.cleaned_data['phone'])
+                # Update patient's name if it's different
+                if patient.full_name != form.cleaned_data['full_name']:
+                    patient.full_name = form.cleaned_data['full_name']
+                    patient.save()
+            except Patient.DoesNotExist:
+                # Generate a unique telegram_id for web appointments
+                web_id = f"web_{int(timezone.now().timestamp())}"
+                # Create new patient if doesn't exist
+                patient = Patient.objects.create(
+                    phone=form.cleaned_data['phone'],
+                    full_name=form.cleaned_data['full_name'],
+                    telegram_id=web_id
+                )
+            
+            # Convert string date to date object
+            appointment_date = datetime.strptime(form.cleaned_data['appointment_date'], '%Y-%m-%d').date()
+            
+            # Get the last appointment for this doctor and date
+            last_appointment = Appointment.objects.filter(
+                doctor=doctor,
+                appointment_date=appointment_date
+            ).order_by('-queue_number').first()
+            
+            # Calculate next queue number
+            next_queue_number = 1 if not last_appointment else last_appointment.queue_number + 1
+            
+            # Create appointment
+            appointment = Appointment.objects.create(
+                doctor=doctor,
+                patient=patient,
+                appointment_date=appointment_date,
+                notes=form.cleaned_data['reason'],
+                status='pending',
+                queue_number=next_queue_number
+            )
+            
+            # Generate PDF
+            pdf_buffer = generate_appointment_pdf(appointment)
+            
+            # Create response with patient name in filename
+            safe_filename = patient.full_name.replace(' ', '_')
+            response = HttpResponse(pdf_buffer, content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="navbat_{safe_filename}.pdf"'
+            
+            # Add success message with extra_tags for timing
+            messages.success(request, f"Navbat muvaffaqiyatli olindi! Navbat raqami: {appointment.queue_number}", extra_tags='timeout=10000')
+            
+            # Return PDF response
+            return response
+    else:
+        form = AppointmentForm(doctor=doctor)
+    
+    return render(request, 'appointments/appointment_create.html', {
+        'form': form,
+        'doctor': doctor
+    })
 
 # API views
 class AppointmentListView(generics.ListAPIView):
